@@ -1,0 +1,15 @@
+## SIMILARITY_ALGORITHM:
+- Add the ability to use multiple threads to analyze a track
+
+## BACKEND:
+- Consider the possibility for track authors to specify tags for a song. Install the song database with tags in advance.
+
+## TESTS:
+- Very many many tests of the song selection algorithm
+    Test the behavior of the algorithms for the following scenarios:
+        - The same track but with different arrangements (remixes)
+        - Similar tracks according to other services
+        - Tracks of the same genre, the most obvious one is phonk
+        - Similar songs in my personal opinion
+- Сonsider reducing the duration of track analysis - will it greatly affect the result of the algorithm
+- Сonsider the possibility of reducing the quality of processing without losing the final result
