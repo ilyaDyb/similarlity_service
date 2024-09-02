@@ -13,6 +13,9 @@ Add your tasks to this file to see your progress. Try to write beautifully and t
         - Similar tracks according to other services
         - Tracks of the same genre, the most obvious one is phonk
         - Similar songs in my personal opinion
+
+        + Identical tracks
+        +- Different tracks (I think more testing is needed for this)
 - Сonsider reducing the duration of track analysis - will it greatly affect the result of the algorithm
 - Сonsider the possibility of reducing the quality of processing without losing the final result
 
