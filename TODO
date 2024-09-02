@@ -1,3 +1,5 @@
+Add your tasks to this file to see your progress. Try to write beautifully and thoughtfully, so that everyone is comfortable. And agree on who solves what task.
+
 ## SIMILARITY_ALGORITHM:
 - Add the ability to use multiple threads to analyze a track
 
@@ -13,3 +15,6 @@
         - Similar songs in my personal opinion
 - Сonsider reducing the duration of track analysis - will it greatly affect the result of the algorithm
 - Сonsider the possibility of reducing the quality of processing without losing the final result
+
+## OTHER:
+- Decide how to exchange backend with algorithm in python (REST or execute)
