@@ -4,6 +4,11 @@ Add your tasks to this file to see your progress. Try to write beautifully and t
 - Add the ability to use multiple threads to analyze a track
 
 ## BACKEND:
+Installation and configuration:
+    1. Build a basic django app with a welcome message
+    2. Build a more convenient and scalable file structure, run the server without errors)
+    3. Connect PostgreSQL (set up separation between the test DB (local) and the production DB)
+
 - Consider the possibility for track authors to specify tags for a song. Install the song database with tags in advance.
 
 ## TESTS:
