@@ -8,6 +8,7 @@ Installation and configuration:
     1. Build a basic django app with a welcome message
     2. Build a more convenient and scalable file structure, run the server without errors)
     3. Connect PostgreSQL (set up separation between the test DB (local) and the production DB)
+    4. Document the process of installing and running the backend in a README file, and you may also want a folder with developer documentation.
 
 - Consider the possibility for track authors to specify tags for a song. Install the song database with tags in advance.
 
