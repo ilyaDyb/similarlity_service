@@ -1,3 +1,5 @@
 librosa==0.10.2.post1
 pytest==8.3.2
 mutagen==1.47.0
+beautifulsoup4==4.12.3
+lxml==5.3.0

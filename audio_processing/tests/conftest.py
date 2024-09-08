@@ -14,8 +14,9 @@ PATH_SIMILAR   = "audio_processing/tests/computing/test_audios/similar/"
 def audio_processing_func():
     def _process_audio(filename):
         audio = AudioProcessing(filename)
-        audio.load_file()
+        duraction = audio.get_duraction()
+        audio.load_file(duraction=duraction // 2 - 1)
         audio.set_features_base()
         # audio.set_features_advanced()
-        return audio.get_file_signuture()
+        return audio.get_file_signature()
     return _process_audio

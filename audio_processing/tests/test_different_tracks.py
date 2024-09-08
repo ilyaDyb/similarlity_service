@@ -35,10 +35,10 @@ def run_test_pair(audio_processing_func, filename1, filename2, expected_cos_simi
 def test_different_tracks(audio_processing_func):
     """Test different tracks with varying levels of similarity"""
     test_cases = [
-        ("example01.mp3", "example02.mp3", 0.1, 10.0),
-        ("example01.mp3", "example03.mp3", 0.1, 20.0),
-        ("example02.mp3", "example03.mp3", 0.1, 50.0),
-        ("example03.mp3", "example04.mp3", 0.1, 50.0),
+        ("example05.mp3", "example06.mp3", 0.1, 10.0),
+        ("example05.mp3", "example07.mp3", 0.1, 20.0),
+        ("example06.mp3", "example07.mp3", 0.1, 50.0),
+        ("example07.mp3", "example08.mp3", 0.1, 50.0),
     ]
 
     # example1 - Glamur      - Nkeeei, uniqe ...
@@ -48,4 +48,3 @@ def test_different_tracks(audio_processing_func):
     
     for filename1, filename2, expected_cos_similarity, expected_dist_euclidean in test_cases:
         run_test_pair(audio_processing_func, filename1, filename2, expected_cos_similarity, expected_dist_euclidean)
-

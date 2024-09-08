@@ -7,9 +7,9 @@ from scipy.spatial import distance
 from mutagen.mp3 import MP3
 
 class AudioProcessing:
-    HOP_LENGTH = 256
+    """v 1.0.0"""
+    HOP_LENGTH = 512
     N_FFT = None
-
 
     def __init__(self, filename) -> None:
         self.filename = filename
@@ -43,7 +43,7 @@ class AudioProcessing:
             raise ValueError("Audio file not loaded")
         
         y_harmonic, _ = librosa.effects.hpss(self.y)
-        self.mfcc = librosa.feature.mfcc(y=self.y, sr=self.sr, hop_length=self.HOP_LENGTH, n_mfcc=10)
+        self.mfcc = librosa.feature.mfcc(y=self.y, sr=self.sr, hop_length=self.HOP_LENGTH)
         # self.chromagram = librosa.feature.chroma_cqt(y=y_harmonic, sr=self.sr)
         self.chromagram = librosa.feature.chroma_stft(y=y_harmonic, sr=self.sr)
 
@@ -141,41 +141,3 @@ class AudioTools:
     def get_correlation_distance(self, signature1: List[float], signature2: List[float]):
         dist = distance.correlation(signature1, signature2)
         return dist
-
-
-# TODO experiment with track lengths, see how the results behave with the middle
-# of the track at a certain length, just to the middle, and from the middle to the end
-
-# filename = "audio_processing/tests/computing/test_audios/different/example01.mp3"
-
-# audio = AudioProcessing(filename)
-# from datetime import datetime
-# now = datetime.now()
-# duraction = audio.get_duraction()
-# end = datetime.now()
-# print(f"duraction: {duraction//2}\nTime: {end-now}")
-
-
-
-# TODO use this method in future
-
-# from concurrent.futures import ThreadPoolExecutor
-
-# def process_file(filename):
-#     audio_processor = AudioProcessing(filename)
-#     # audio_processor.load_file() # 12 sec
-#     # dur = audio_processor.get_duraction()
-#     # audio_processor.load_file(duraction=(dur//2+1)) # 6 sec
-#     # audio_processor.set_features_base()
-#     return audio_processor.get_file_signature()
-
-# PATH = "audio_processing/tests/computing/test_audios/different/"
-# filenames = [PATH + "example01.mp3", PATH + "example02.mp3", PATH + "example03.mp3"]
-
-# with ThreadPoolExecutor() as executor:
-#     start = datetime.datetime.now()
-#     results = list(executor.map(process_file, filenames))
-#     for i, result in enumerate(results):
-#         print(f"Result {i+1} for file {filenames[i]}: {result}")
-#     end = datetime.datetime.now()
-#     print(end - start)

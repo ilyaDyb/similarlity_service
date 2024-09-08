@@ -1,8 +1,12 @@
-.env
+# dirs
 venv/
-features.md
 .vscode/
-.pylintrc
 .pytest_cache/
 __pycache__/
+# files
+.env
+features.md
+.pylintrc
 *example*.*
+signatures.txt
+test.html
