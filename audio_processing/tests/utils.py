@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 import lxml
 
@@ -77,8 +78,8 @@ class DownloadMusicProccess:
 
 # Example for use
 
-download_proccess = DownloadMusicProccess("https://rus.hitmotop.com/artist/37933/start/48", "similar") # oprional .../209/48 - this is smth like offset
-links = download_proccess.get_song_links()
-download_proccess.download_file(links)
-print(links)
-files = os.listdir(download_proccess.download_path)
+# download_proccess = DownloadMusicProccess("https://rus.hitmotop.com/artist/37933", "similar") # oprional .../209/48 - this is smth like offset
+# links = download_proccess.get_song_links()
+# download_proccess.download_file(links)
+# print(links)
+# files = os.listdir(download_proccess.download_path)
