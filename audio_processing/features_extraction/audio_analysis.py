@@ -1,101 +1,15 @@
-import datetime
+from typing import List, Optional
+
 import librosa
 import numpy as np
 
-from typing import List, Optional
 from scipy.spatial import distance
+from scipy.fftpack import dct
 from mutagen.mp3 import MP3
 
+
 class AudioProcessing:
-    """v 1.0.0"""
-    HOP_LENGTH = 512
-    N_FFT = None
-
-    def __init__(self, filename) -> None:
-        self.filename = filename
-
-        self.y: Optional[np.ndarray] = None
-        self.sr: Optional[int] = None
-
-        self.mfcc: Optional[np.ndarray] = None
-        self.chromagram: Optional[np.ndarray] = None
-
-        self.spectral_centroid: Optional[np.ndarray] = None
-        self.spectral_bandwidth: Optional[np.ndarray] = None
-        self.zcr: Optional[np.ndarray] = None
-
-
-    def get_duraction(self):
-        return MP3(self.filename).info.length
-
-
-    def load_file(self, duraction=None) -> None:
-        try:
-            y, sr = librosa.load(self.filename, duration=duraction)
-            self.y = y
-            self.sr = sr
-        except Exception as ex:
-            raise ValueError(f"Error loading file: {ex}")
-        
-
-    def set_features_base(self) -> None:
-        if self.y is None or self.sr is None:
-            raise ValueError("Audio file not loaded")
-        
-        y_harmonic, _ = librosa.effects.hpss(self.y)
-        self.mfcc = librosa.feature.mfcc(y=self.y, sr=self.sr, hop_length=self.HOP_LENGTH)
-        # self.chromagram = librosa.feature.chroma_cqt(y=y_harmonic, sr=self.sr)
-        self.chromagram = librosa.feature.chroma_stft(y=y_harmonic, sr=self.sr)
-
-        if self.mfcc.size == 0 or self.chromagram.size == 0:
-            raise ValueError("file is not contain some features")
-
-
-    def set_features_advanced(self) -> None:
-        """does not work correctly for similarity results"""
-        if self.y is None or self.sr is None:
-            raise ValueError("Audio file not loaded")
-        
-        self.spectral_centroid = librosa.feature.spectral_centroid(y=self.y, sr=self.sr)
-        self.spectral_bandwidth = librosa.feature.spectral_bandwidth(y=self.y, sr=self.sr)
-        self.zcr = librosa.feature.zero_crossing_rate(self.y)
-
-        if self.spectral_centroid.size == 0 or self.spectral_bandwidth.size == 0 or self.zcr.size == 0:
-            raise ValueError("Impossible to extract some features from file")
-        
-
-    def get_file_signature(self) -> List[float]:
-        if self.mfcc is None or self.chromagram is None:
-            raise ValueError("Base parameters were not loaded")
-        
-        mfcc_mean = np.mean(self.mfcc, axis=1)
-        mfcc_std = np.std(self.mfcc, axis=1)
-
-        chroma_mean = np.mean(self.chromagram, axis=1)
-        chroma_std = np.std(self.chromagram, axis=1)
-
-        signature = np.hstack([
-            mfcc_mean, mfcc_std, 
-            chroma_mean, chroma_std
-        ])
-
-        if self.spectral_centroid is not None:
-            spectral_centroid_mean = np.mean(self.spectral_centroid, axis=1)
-            signature = np.hstack([signature, spectral_centroid_mean])
-
-        if self.spectral_bandwidth is not None:
-            spectral_bandwidth_mean = np.mean(self.spectral_bandwidth, axis=1)
-            signature = np.hstack([signature, spectral_bandwidth_mean])
-
-        if self.zcr is not None:
-            zcr_mean = np.mean(self.zcr, axis=1)
-            signature = np.hstack([signature, zcr_mean])
-
-        return signature.tolist()
-
-
-class AudioProcessingBeta:
-    """v 1.1.0"""
+    """v 1.2.0"""
     HOP_LENGTH = 512
     N_FFT = None
 
@@ -119,9 +33,10 @@ class AudioProcessingBeta:
     def get_duration(self):
         return MP3(self.filename).info.length
 
-    def load_file(self, duration=None) -> None:
+    def load_file(self, duration=None, offset=None) -> None:
         try:
-            y, sr = librosa.load(self.filename, duration=duration)
+            if not offset:
+                y, sr = librosa.load(self.filename, duration=duration, sr=15500)
             self.y = y
             self.sr = sr
         except Exception as ex:
@@ -138,7 +53,6 @@ class AudioProcessingBeta:
             self.mfcc = librosa.feature.mfcc(y=self.y, sr=self.sr, hop_length=self.HOP_LENGTH)
         
         if use_chromagram:
-            # Использование chromagram или chroma_stft
             self.chromagram = librosa.feature.chroma_stft(y=y_harmonic, sr=self.sr)
 
         if use_rms:
@@ -157,11 +71,11 @@ class AudioProcessingBeta:
         """Advanced feature extraction with usage options"""
         if self.y is None or self.sr is None:
             raise ValueError("Audio file not loaded")
-        
+
         if use_spectral:
             self.spectral_centroid = librosa.feature.spectral_centroid(y=self.y, sr=self.sr)
             self.spectral_bandwidth = librosa.feature.spectral_bandwidth(y=self.y, sr=self.sr)
-        
+
         if use_zcr:
             self.zcr = librosa.feature.zero_crossing_rate(self.y)
 
@@ -172,6 +86,7 @@ class AudioProcessingBeta:
            (use_zcr and self.zcr.size == 0) or (use_tonnetz and self.tonnetz.size == 0):
             raise ValueError("Impossible to extract some advanced features")
 
+
     def __normalize_signature(self, signature: np.ndarray, normalization_type="z-score") -> np.ndarray:
         """Optional signature normalization"""
         if normalization_type == "z-score":
@@ -181,8 +96,9 @@ class AudioProcessingBeta:
         else:
             raise ValueError("Unknown normalization type")
 
+
     def get_file_signature(self, normalize=False, normalization_type="z-score") -> List[float]:
-        """Извлечение сигнатуры с опцией нормализации"""
+        """Signuture extraction"""
         if self.mfcc is None or self.chromagram is None:
             raise ValueError("Base features were not loaded")
 
@@ -248,6 +164,20 @@ class AudioTools:
     def deserialize_signature(self, signature_str: str) -> List[float]:
         return list(map(float, signature_str.split(',')))
 
+    def reduce_with_dct(self, signature: List[float], n_components: int) -> List[float]:
+        """
+        Снижает размерность вектора признаков с помощью DCT, сохраняя первые n_components коэффициентов.
+
+        :param signature: исходный вектор признаков.
+        :param n_components: количество коэффициентов для сохранения.
+        :return: вектор признаков уменьшенной размерности.
+        """
+        signature_array = np.array(signature)
+        # Применяем DCT
+        dct_coefficients = dct(signature_array, norm='ortho')
+        # Выбираем первые n_components коэффициентов
+        reduced_signature = dct_coefficients[:n_components]
+        return reduced_signature.tolist()
 
     def get_cos_similarity(self, signature1: List[float], signature2: List[float]):
         cos_sim = distance.cosine(signature1, signature2)
