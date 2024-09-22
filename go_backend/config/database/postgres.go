@@ -1,13 +1,17 @@
 package database
 
 import (
+	"fmt"
 	"log"
+	"os"
 
+	"github.com/ilyaDyb/similarity_service/internal/models"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -16,5 +20,24 @@ func init() {
 }
 
 func Connect() {
-	return
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", dbHost, dbUser, dbPassword, dbName, dbPort)
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+	// err = Migrate(DB)
+	// if err != nil {
+	// 	log.Fatalf("Error migration: %v", err)
+	// }
+}
+
+func Migrate(db *gorm.DB) error {
+	DB.AutoMigrate(&models.Track{})
+	return nil
 }

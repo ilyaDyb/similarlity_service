@@ -153,7 +153,7 @@ def calculate_distances(signatures, reference_track_name=None):
             continue
         audio_tool = AudioTools()
         # get_cos_similarity | get_manhattan_distance
-        dist = audio_tool.get_manhattan_distance(reference_signature, np.array(signature_values))
+        dist = audio_tool.get_euclidean_distance(reference_signature, np.array(signature_values))
         dist_info[track_name] = dist
     
     return dist_info
@@ -186,7 +186,7 @@ def print_sorted_alg_results(output_file_path="signatures.txt", reference_track_
 
 def start_tests(output_file_path: str, with_load: bool, folder_path: str,
                 use_advanced=False, normalize=False, normalization_type="z-score", features_to_use=None,
-                reduce_dimension=False, reference_track_name=None, n_component=50):
+                reduce_dimension=False, reference_track_name=None, n_components=50):
     """Основная функция для запуска тестов"""
     
     if with_load:
@@ -203,6 +203,7 @@ def start_tests(output_file_path: str, with_load: bool, folder_path: str,
             normalization_type=normalization_type, 
             features_to_use=features_to_use,
             reduce_dimension=reduce_dimension,
+            n_component=n_components
         )
     else:
         print(f"Signatures loaded from {output_file_path}")
@@ -231,8 +232,8 @@ def run_multiple_tests():
         "use_zcr": True,
         "use_tonnetz": True
     }
-    # reference_track_name = 'example144.mp3'
-    reference_track_name = 'example26.mp3'
+    reference_track_name = 'example144.mp3'
+    # reference_track_name = 'example26.mp3'
     # Тест без сокращения размерности
     # print("Running test without dimensionality reduction...")
     # start_tests(
@@ -251,15 +252,15 @@ def run_multiple_tests():
     # print("\nRunning test with dimensionality reduction (top_features)...")
     start_tests(
         output_file_path=output_file_path,
-        with_load=True,
+        with_load=False,
         folder_path=folder_path,
         use_advanced=True,
         normalize=True,
         normalization_type="min-max",
         features_to_use=custom_features,
         reduce_dimension=True,
-        n_component=110,
-        reference_track_name=reference_track_name
+        n_components=110,
+        reference_track_name=reference_track_name,
     )
     
 
@@ -289,3 +290,4 @@ if __name__ == "__main__":
 # end_time = total_duration * end_ratio
 # duration = round(end_time - start_time)
 # Code ended in: 0:03:10.635004 with advanced params and HOP_512 BAD RESULT
+

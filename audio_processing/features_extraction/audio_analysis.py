@@ -1,15 +1,16 @@
+from tempfile import NamedTemporaryFile
 from typing import List, Optional
 
 import librosa
 import numpy as np
 
+import requests
 from scipy.spatial import distance
 from scipy.fftpack import dct
 from mutagen.mp3 import MP3
 
-
 class AudioProcessing:
-    """v 1.2.0"""
+    """v 1.2.1"""
     HOP_LENGTH = 512
     N_FFT = None
 
@@ -33,14 +34,21 @@ class AudioProcessing:
     def get_duration(self):
         return MP3(self.filename).info.length
 
-    def load_file(self, duration=None, offset=None) -> None:
-        try:
-            if not offset:
-                y, sr = librosa.load(self.filename, duration=duration, sr=15500)
-            self.y = y
-            self.sr = sr
-        except Exception as ex:
-            raise ValueError(f"Error loading file: {ex}")
+    def load_file(self, duration=None, is_url=False) -> None:
+            try:
+                if not is_url:
+                    self.y, self.sr = librosa.load(self.filename, duration=duration, sr=15500)
+                else:
+                    with requests.get(self.filename, stream=True) as response:
+                        response.raise_for_status()
+                        with NamedTemporaryFile(delete=True, suffix=".mp3") as tmp_file:
+                            for chunk in response.iter_content(chunk_size=8192):
+                                if chunk:
+                                    tmp_file.write(chunk)
+                            tmp_file.flush()
+                            self.y, self.sr = librosa.load(tmp_file.name, duration=duration, sr=15500)
+            except Exception as ex:
+                raise ValueError(f"Error loading file: {ex}")
 
     def set_features_base(self, use_mfcc=True, use_chromagram=True, use_rms=True, use_mel_spectrogram=True, use_tempo=True) -> None:
         """Extraction of basic features with usage options"""
@@ -173,9 +181,7 @@ class AudioTools:
         :return: вектор признаков уменьшенной размерности.
         """
         signature_array = np.array(signature)
-        # Применяем DCT
         dct_coefficients = dct(signature_array, norm='ortho')
-        # Выбираем первые n_components коэффициентов
         reduced_signature = dct_coefficients[:n_components]
         return reduced_signature.tolist()
 
