@@ -1,0 +1,4 @@
+ALTER TABLE tracks
+    ALTER COLUMN artist_id TYPE TEXT,
+    ALTER COLUMN artists TYPE TEXT,
+    ALTER COLUMN title TYPE TEXT;

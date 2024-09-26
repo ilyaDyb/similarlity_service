@@ -23,7 +23,188 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {},
+    "paths": {
+        "/select_artist/{id}": {
+            "post": {
+                "description": "Select an artist by their ID and process it via Redis",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Select Artist by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Artist ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/tracks": {
+            "get": {
+                "description": "-",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tracks"
+                ],
+                "summary": "Search tracks by query",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query",
+                        "name": "query",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Track"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tracks/similar/{id}": {
+            "get": {
+                "description": "-",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tracks"
+                ],
+                "summary": "Get similar tracks by track_id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "track_id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Track"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tracks/{id}": {
+            "get": {
+                "description": "-",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tracks"
+                ],
+                "summary": "Get track by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "track ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Track"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Track": {
+            "type": "object",
+            "properties": {
+                "artist_id": {
+                    "type": "string"
+                },
+                "artists": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "preview_url": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "JWT": {
             "type": "basic"
@@ -38,8 +219,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Host:             "localhost:8000",
+	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Swagger REST API",
 	Description:      "",

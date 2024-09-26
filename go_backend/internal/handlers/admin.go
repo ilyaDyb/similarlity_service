@@ -23,10 +23,10 @@ import (
 // @Accept json
 // @Produce json
 // @Param id path int true "Artist ID"
-// @Success 200 {object} "Something"
-// @Failure 400 {object} "Something"
-// @Failure 500 {object} "Something"
-// @Router /api/v1/select_artist/{id} [post]
+// @Success 200 {object} string
+// @Failure 400 {object} string
+// @Failure 500 {object} string
+// @Router /select_artist/{id} [post]
 func SelectArtist(c *gin.Context) {//func (h *AdminHandler) SelectArtist(c *gin.Context) {
     artistID := c.Param("id")
 

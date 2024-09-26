@@ -9,6 +9,9 @@ A microservice designed to analyze and compare audio files, particularly music t
 * Docker
 * Docker Compose
 * PostgreSQL
+* RESTful API
+* JWT
+* Swagger
 * Kafka
 * NumPy
 * librosa

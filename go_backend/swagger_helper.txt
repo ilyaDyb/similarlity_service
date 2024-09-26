@@ -1,2 +1,0 @@
-swag init --dir ./cmd --output ./api
-export PATH=$(go env GOPATH)/bin:$PATH

@@ -35,3 +35,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	}
 
 }
+
+// func AdminPermissionMiddleware() gin.HandlerFunc {
+
+// }

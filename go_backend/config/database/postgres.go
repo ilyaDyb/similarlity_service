@@ -35,9 +35,12 @@ func Connect() {
 	// if err != nil {
 	// 	log.Fatalf("Error migration: %v", err)
 	// }
+	if err := DB.Exec("SET ivfflat.probes = 20").Error; err != nil {
+		log.Fatalf("Error setting ivfflat probes in database: %v", err)
+	}
 }
 
 func Migrate(db *gorm.DB) error {
-	DB.AutoMigrate(&models.Track{})
+	DB.AutoMigrate(&models.Track{}, &models.User{})
 	return nil
 }

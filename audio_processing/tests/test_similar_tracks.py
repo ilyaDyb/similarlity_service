@@ -153,7 +153,7 @@ def calculate_distances(signatures, reference_track_name=None):
             continue
         audio_tool = AudioTools()
         # get_cos_similarity | get_manhattan_distance
-        dist = audio_tool.get_euclidean_distance(reference_signature, np.array(signature_values))
+        dist = audio_tool.get_manhattan_distance(reference_signature, np.array(signature_values))
         dist_info[track_name] = dist
     
     return dist_info
