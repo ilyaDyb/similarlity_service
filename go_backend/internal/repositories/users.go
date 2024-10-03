@@ -3,9 +3,9 @@ package repositories
 import "gorm.io/gorm"
 
 type UsersRepository struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func NewUsersRepository(db *gorm.DB) *UsersRepository {
-	return &UsersRepository{db: db}
+	return &UsersRepository{DB: db}
 }

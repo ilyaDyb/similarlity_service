@@ -105,12 +105,12 @@ class SpotifyApiInterface(BaseSpotifyApiInterface):
 
         return tracks_credentials
         
-    def get_preview_tracks(self, tracks_href):
+    def get_preview_tracks_by_hrefs(self, tracks_href):
         self._prepare_request()
         tracks_credentials = []
-        for track_credentails in tracks_href:
+        for href in tracks_href:
             response_json = self._make_request(
-                url=track_credentails,
+                url=href,
                 headers=self._get_headers(),
                 method="get"
             )
@@ -121,6 +121,20 @@ class SpotifyApiInterface(BaseSpotifyApiInterface):
             })
         return tracks_credentials
     
+    def get_preview_tracks_from_album(self, album_id):
+        self._prepare_request()
+        url = f"https://api.spotify.com/v1/albums/{album_id}/tracks"
+        return self._make_request(url=url, headers=self._get_headers())
+    
+    def get_clean_data_from_preview_json(self, json_data):
+        tracks_credentials = []
+        for track in json_data:
+            tracks_credentials.append({
+                "artists": [artist["name"] for artist in track.get("artists")],
+                "name": track.get("name"),
+                "preview_url": track.get("preview_url"),
+            })
+        return tracks_credentials
 
 # interface = SpotifyApiInterface()
 # albums_list = interface.get_all_albums_by_atrist_id("1F8usyx5PbYGWxf0bwdXwA")
@@ -168,3 +182,10 @@ class SpotifyApiInterface(BaseSpotifyApiInterface):
 # audio_from_local_installed.set_features_advanced()
 # signature_local_installed = audio_from_local_installed.get_file_signature()
 # print(signature_local_installed == signature_url)
+# interface = SpotifyApiInterface()
+# json_data = interface.get_preview_tracks_from_album("41Y2U2Oy92XK8xSN7gXmoE")
+# # for data in json_data:
+# #     print(data)
+# # print(json_data)
+# tracks_preview = interface.get_clean_data_from_preview_json(json_data=json_data.get("items"))
+# print(tracks_preview)

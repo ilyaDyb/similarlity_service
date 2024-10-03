@@ -1,27 +1,30 @@
 package models
 
 import (
+	"errors"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type User struct {
+	Id 		 int 	`json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 	IsAdmin  bool 	`json:"is_admin"`
 	Password string `json:"-"`
 }
 
-func (u *User) CheckPassword(db *gorm.DB, password string) error {
-	var hashedPassword string
-	err := db.Raw(`SELECT password FROM users WHERE username = ?`, u.Username).Scan(&hashedPassword)
+func (u *User) CheckPassword(db *gorm.DB) (*User, error) {
+	var user User
+	err := db.Where("username = ?", u.Username).First(&user).Error
 	if err != nil {
-		return err.Error
+		return nil, errors.New("invalid username or password")
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
-		return err
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(u.Password)); err != nil {
+		return nil, errors.New("invalid username or password")
 	}
-	return nil
+	return &user, nil
 }
 
 func (u *User) SaveUserWithHashedPassword(db *gorm.DB) error {

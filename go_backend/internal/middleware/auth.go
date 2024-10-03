@@ -33,9 +33,4 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		ctx.Set("user_id", claims.UserId)
 		ctx.Next()
 	}
-
 }
-
-// func AdminPermissionMiddleware() gin.HandlerFunc {
-
-// }

@@ -2,7 +2,8 @@ swag init --dir ./cmd --output ./api
 swag init --generalInfo ./cmd/main.go --output ./api
 export PATH=$(go env GOPATH)/bin:$PATH
 
-
 migrate create -ext sql -dir internal/migrations -seq create_tracks_table
 migrate -database postgres://user:password@localhost:5432/dbname?sslmode=disable -path ./internal/migrations up      + force VERSION
 pg_dump -h localhost -U postgres -s -f db_schema.sql similarity_service
+
+sudo kill -9 $(lsof -t -i:8000)

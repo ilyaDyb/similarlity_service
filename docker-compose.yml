@@ -8,6 +8,8 @@ services:
         condition: service_healthy
       python-app:
         condition: service_started
+      redis:
+        condition: service_healthy
     environment:
       PYTHON_APP_URL: http://python-app:5000
     ports:
@@ -21,6 +23,7 @@ services:
       - ./audio_processing:/app
     depends_on:
       - db
+      - redis
     ports:
       - "5000:5000"
     networks:
@@ -40,6 +43,17 @@ services:
       POSTGRES_DB: similarity_service
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
       interval: 5s
       timeout: 5s
       retries: 5

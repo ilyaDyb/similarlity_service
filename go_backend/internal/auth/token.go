@@ -15,10 +15,6 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// type RefreshClaims struct {
-// 	UserId int `json"user_id"`
-// 	jwt.
-// }
 
 func GenerateJWT(userId int) (string, error) {
 	expirationTime := time.Now().Add(60 * time.Minute)
@@ -28,7 +24,7 @@ func GenerateJWT(userId int) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	return token.SignedString(jwtKey)
 }
 
@@ -40,7 +36,7 @@ func GenerateRefresh(userId int) (string, error) {
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	return token.SignedString(refreshKey)
 }
 

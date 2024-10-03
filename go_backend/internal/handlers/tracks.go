@@ -9,17 +9,18 @@ import (
 )
 
 type TracksHandler struct {
-	tracksRepo *repositories.TracksRepository
+	Repo *repositories.TracksRepository
 }
 
-func NewTracksHandler(tracksRepo *repositories.TracksRepository) *TracksHandler {
-	return &TracksHandler{tracksRepo: tracksRepo}
+func NewTracksHandler(repo *repositories.TracksRepository) *TracksHandler {
+	return &TracksHandler{Repo: repo}
 }
 
 // @Summary Get track by id
 // @Description -
 // @Tags tracks
 // @Produce json
+// @Param Authorization header string true "With the Bearer started"
 // @Param id path string true "track ID"
 // @Success 200 {object} models.Track
 // @Failure 500 {object} map[string]string
@@ -27,10 +28,10 @@ func NewTracksHandler(tracksRepo *repositories.TracksRepository) *TracksHandler 
 func (h *TracksHandler) GetTrackByIdHandler(c *gin.Context) {
 	artistId := c.Param("id")
 
-	track, err := h.tracksRepo.GetTrackById(artistId)
+	track, err := h.Repo.GetTrackById(artistId)
 	if err != nil {
 		log.Println(err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -41,6 +42,7 @@ func (h *TracksHandler) GetTrackByIdHandler(c *gin.Context) {
 // @Description -
 // @Tags tracks
 // @Produce json
+// @Param Authorization header string true "With the Bearer started"
 // @Param query query string true "query"
 // @Success 200 {object} models.Track
 // @Failure 500 {object} map[string]string
@@ -48,13 +50,13 @@ func (h *TracksHandler) GetTrackByIdHandler(c *gin.Context) {
 func (h *TracksHandler) SearchTracksHandler(c *gin.Context) {
 	search := c.Query("query")
 
-	tracks, err := h.tracksRepo.SearchTracksByStr(search)
+	tracks, err := h.Repo.SearchTracksByStr(search)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"tracks": tracks})
 }
 
@@ -62,6 +64,7 @@ func (h *TracksHandler) SearchTracksHandler(c *gin.Context) {
 // @Description -
 // @Tags tracks
 // @Produce json
+// @Param Authorization header string true "With the Bearer started"
 // @Param id path string true "track_id"
 // @Success 200 {object} models.Track
 // @Failure 500 {object} map[string]string
@@ -69,12 +72,12 @@ func (h *TracksHandler) SearchTracksHandler(c *gin.Context) {
 func (h *TracksHandler) GetSimilarTracksHandler(c *gin.Context) {
 	id := c.Param("id")
 
-	tracks, err := h.tracksRepo.GetSimilarTracks(id)
+	tracks, err := h.Repo.GetSimilarTracks(id)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"tracks": tracks})
 }
