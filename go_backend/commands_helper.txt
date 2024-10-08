@@ -7,3 +7,5 @@ migrate -database postgres://user:password@localhost:5432/dbname?sslmode=disable
 pg_dump -h localhost -U postgres -s -f db_schema.sql similarity_service
 
 sudo kill -9 $(lsof -t -i:8000)
+
+docker exec -it similarlity_service_db_1 psql -U postgres -d similarity_service

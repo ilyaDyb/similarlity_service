@@ -1,6 +1,9 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/ilyaDyb/similarity_service/internal/models"
 	"gorm.io/gorm"
 )
@@ -28,16 +31,34 @@ func (r *TracksRepository) SearchTracksByStr(str string) ([]models.Track, error)
 	return tracks, err.Error
 }
 
-func (r *TracksRepository) GetSimilarTracks(trackID string) ([]models.Track, error) {
+func (r *TracksRepository) GetSimilarTracks(trackId string) ([]models.Track, error) {
 	var tracks []models.Track
 
 	query := `
 		SELECT id, artists, title, preview_url
 		FROM tracks
-		ORDER BY signature <=> (SELECT signature FROM tracks WHERE id = ?)::vector
+		ORDER BY signature <-> (SELECT signature FROM tracks WHERE id = ?)::vector
 		LIMIT 20;
 	`
-	res := r.DB.Raw(query, trackID).Scan(&tracks)
+	err := r.DB.Raw(query, trackId).Scan(&tracks).Error
 
-	return tracks, res.Error
+	return tracks, err
+}
+
+func (r *TracksRepository) CheckSignature(trackId string) error {
+	var track struct {
+		Title string
+	}
+	err := r.DB.Table("tracks").
+		Select("title").
+		Where("id = ? AND signature IS NOT NULL", trackId).
+		Take(&track).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fmt.Errorf("Track with id: %s has not a signature")
+		}
+		return fmt.Errorf("Error db query: %v", err)
+	}
+	return nil
 }

@@ -21,6 +21,16 @@ definitions:
       username:
         type: string
     type: object
+  handlers.loadTracksByAlbum:
+    properties:
+      album_id:
+        type: string
+    type: object
+  handlers.loadTracksByArtist:
+    properties:
+      artist_id:
+        type: string
+    type: object
   models.Track:
     properties:
       artist_id:
@@ -50,6 +60,113 @@ info:
   title: Swagger REST API
   version: "1.0"
 paths:
+  /admin/load-album:
+    post:
+      description: '-'
+      parameters:
+      - description: album_id
+        in: body
+        name: AlbumId
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.loadTracksByAlbum'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: load tracks by album
+      tags:
+      - admin
+  /admin/load-artist:
+    post:
+      description: '-'
+      parameters:
+      - description: artist_id
+        in: body
+        name: ArtistId
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.loadTracksByArtist'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: load tracks by album
+      tags:
+      - admin
+  /admin/set-signatures:
+    post:
+      description: load all audios without signatures and set it
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: setting signatures
+      tags:
+      - admin
   /auth/login:
     post:
       consumes:
@@ -163,39 +280,15 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /select_artist/{id}:
-    post:
-      consumes:
-      - application/json
-      description: Select an artist by their ID and process it via Redis
-      parameters:
-      - description: Artist ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Select Artist by ID
-      tags:
-      - admin
   /tracks:
     get:
       description: '-'
       parameters:
+      - description: With the Bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: query
         in: query
         name: query
@@ -221,6 +314,11 @@ paths:
     get:
       description: '-'
       parameters:
+      - description: With the Bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: track ID
         in: path
         name: id
@@ -246,6 +344,11 @@ paths:
     get:
       description: '-'
       parameters:
+      - description: With the Bearer started
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: track_id
         in: path
         name: id

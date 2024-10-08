@@ -29,7 +29,6 @@ type RegisterInput struct {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "With the Bearer started"
 // @Param RegisterInput body RegisterInput true "Register Input"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
@@ -83,7 +82,6 @@ type LoginInput struct {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "With the Bearer started"
 // @Param LoginInput body LoginInput true "Login input"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
@@ -133,7 +131,6 @@ type InputRefresh struct {
 // @Tags    auth
 // @Accept  json
 // @Produce json
-// @Param Authorization header string true "With the Bearer started"
 // @Param   InputRefresh body InputRefresh true "InputRefresh"
 // @Success 200 {object} map[string]string
 // @Success 401 {object} map[string]string

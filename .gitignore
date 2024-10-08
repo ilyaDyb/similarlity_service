@@ -8,6 +8,5 @@ __pycache__/
 features.md
 .pylintrc
 *example*.*
-signatures.txt
-test.html
 config.py
+backup.sql

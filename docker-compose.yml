@@ -16,6 +16,11 @@ services:
       - "8000:8000"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   python-app:
     build: ./audio_processing
@@ -30,11 +35,14 @@ services:
       - app-network
 
   db:
-    image: postgres:13
+    build: 
+      context: .
+      dockerfile: Dockerfile.postgres
     ports:
       - "5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+      - ./backup.sql:/docker-entrypoint-initdb.d/backup.sql
     networks:
       - app-network
     environment:
@@ -42,7 +50,7 @@ services:
       POSTGRES_PASSWORD: wicki
       POSTGRES_DB: similarity_service
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres && psql -U postgres -d similarity_service -c 'SELECT 1;'"]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -34,9 +34,17 @@ def install_preview_by_album(album_id):
     interface = SpotifyApiInterface()
     json_data = interface.get_preview_tracks_from_album(album_id=album_id)
     tracks_preview = interface.get_clean_data_from_preview_json(json_data=json_data.get("items"))
+    
+    print("Tracks preview data:", tracks_preview, flush=True)
+    
     batch_size = 10
     for i in range(0, len(tracks_preview), batch_size):
         batch = tracks_preview[i:i+batch_size]
+        
+        if not batch:
+            print("Batch is empty", flush=True)
+            continue
+
         save_to_database(data=batch)
         time.sleep(1)
 
@@ -45,15 +53,20 @@ def save_to_database(data):
     conn = None
     cursor = None
     try:
+        print("Starting save_to_database...", flush=True)
+
+        # Подключение к базе данных
         conn = get_connection()
         cursor = conn.cursor()
-        
+        print("Connected to the database successfully.", flush=True)
+
+        # Подготовка SQL запроса для вставки данных
         insert_query = """
         INSERT INTO tracks (title, artists, preview_url)
         VALUES (%s, %s, %s)
         ON CONFLICT (preview_url) DO NOTHING;
         """
-        
+
         # Подготовка данных для вставки
         records = [
             (
@@ -63,18 +76,44 @@ def save_to_database(data):
             )
             for track in data
         ]
-        
+
+        # Попытка вставить все записи батчем
         cursor.executemany(insert_query, records)
         conn.commit()
-        print(f"Inserted {cursor.rowcount} records into the database.")
-        
+        print(f"Batch insert completed. Inserted {cursor.rowcount} records into the database.", flush=True)
+
+        # Если ничего не было вставлено, попробовать по одной записи
+        if cursor.rowcount == 0:
+            print("No records were inserted in batch mode. Trying to insert records individually...", flush=True)
+            inserted_count = 0
+
+            for idx, record in enumerate(records):
+                try:
+                    cursor.execute(insert_query, record)
+                    if cursor.rowcount > 0:
+                        inserted_count += 1
+                    print(f"Record {idx + 1}: title='{record[0]}', artists='{record[1]}', preview_url='{record[2]}' - Inserted successfully", flush=True)
+                except Exception as e:
+                    print(f"Error inserting record {idx + 1}: {e}", flush=True)
+
+            conn.commit()
+            print(f"Inserted {inserted_count} records into the database individually.", flush=True)
+
     except Exception as e:
-        print("Error inserting into database:", e)
+        # Логирование ошибки
+        print("Error inserting into database:", e, flush=True)
+
     finally:
+        # Закрытие курсора и соединения с базой данных
         if cursor:
             cursor.close()
+            print("Cursor closed.", flush=True)
         if conn:
             release_connection(conn)
+            print("Connection released.", flush=True)
+
+    print("Finished save_to_database.", flush=True)
+
 
 def get_tracks_without_signatures():
     conn = None
@@ -129,7 +168,7 @@ def save_signatures_to_db(signatures: List[Tuple[int, str]]):
 
         cursor.executemany(update_query, records)
         conn.commit()
-        print(f"Inserted {cursor.rowcount} signatures into the database.")
+        print(f"Inserted {cursor.rowcount} signatures into the database.", flush=True)
     except Exception as e:
         print("Error inserting into database:", e)
     finally:

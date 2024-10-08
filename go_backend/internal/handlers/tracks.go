@@ -71,6 +71,11 @@ func (h *TracksHandler) SearchTracksHandler(c *gin.Context) {
 // @Router /tracks/similar/{id} [get]
 func (h *TracksHandler) GetSimilarTracksHandler(c *gin.Context) {
 	id := c.Param("id")
+	
+	if err := h.Repo.CheckSignature(id); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	tracks, err := h.Repo.GetSimilarTracks(id)
 	if err != nil {

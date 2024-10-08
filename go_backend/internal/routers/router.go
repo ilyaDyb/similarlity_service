@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ilyaDyb/similarity_service/config/database"
 	"github.com/ilyaDyb/similarity_service/internal/handlers"
-	"github.com/ilyaDyb/similarity_service/internal/middleware"
+	// "github.com/ilyaDyb/similarity_service/internal/middleware"
 	"github.com/ilyaDyb/similarity_service/internal/repositories"
 )
 
@@ -19,9 +19,13 @@ func SetupRouter(router *gin.Engine) {//, adminHandler *handlers.AdminHandler) {
     // ADMIN
     {
         admin := api.Group("/admin")
-        admin.Use(middleware.JWTAuthMiddleware())
+        adm_han := handlers.NewAdminHandler(repositories.NewAdminRepository(db))
+        // admin.Use(middleware.JWTAuthMiddleware())
         {
-
+            admin.GET("/test", adm_han.TestRequest)
+            admin.POST("/load-artist", adm_han.LoadTracksByArtistHandler)
+            admin.POST("/load-album", adm_han.LoadTracksByAlbumHandler)
+            admin.POST("/set-signatures", adm_han.SetSignaturesHandler)
         }
     }
 

@@ -32,7 +32,11 @@ func (u *User) SaveUserWithHashedPassword(db *gorm.DB) error {
 	if err != nil {
 		return err
 	}
-    err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", u.Username, u.Email, hashedPassword).Error
+	if !u.IsAdmin {
+		err = db.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", u.Username, u.Email, hashedPassword).Error
+	} else {
+		err = db.Exec("INSERT INTO users (username, email, password, is_admin) VALUES (?, ?, ?, ?)", u.Username, u.Email, hashedPassword, u.IsAdmin).Error
+	}
     if err != nil {
         return err
     }

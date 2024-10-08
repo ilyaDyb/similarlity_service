@@ -2,6 +2,7 @@ package asynq
 
 import (
 	"os"
+	"time"
 
 	"github.com/hibiken/asynq"
 	"github.com/ilyaDyb/similarity_service/internal/tasks"
@@ -27,6 +28,7 @@ func StartAsynq() error {
 				"critical": 3,
 				"low": 1,
 			},
+			RetryDelayFunc: func(n int, e error, t *asynq.Task) time.Duration {return 0},
 		},
 	)
 
@@ -34,6 +36,7 @@ func StartAsynq() error {
 	pythonService := tasks.NewPythonService()
 	mux.HandleFunc("python:install_by_artist", pythonService.InstallTracksByArtistHandler)
 	mux.HandleFunc("python:install_by_album", pythonService.InstallTracksByAlbumHandler)
+	mux.HandleFunc("python:set_signatures", pythonService.SetSignatures)
 	mux.HandleFunc("python:ping", pythonService.TestRequest)
 	// mux.HandleFunc("python:set_signatures")
 	if err := srv.Run(mux); err != nil {
